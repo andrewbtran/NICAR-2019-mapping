@@ -484,6 +484,15 @@ library(tidycensus)
 
 Pass it your Census key.
 
+
+```{r key1, echo=F}
+# Pass it the census key you set up before
+
+census_api_key(census_key)
+```
+
+
+
 ```{r key, eval=F}
 # Pass it the census key you set up before
 
