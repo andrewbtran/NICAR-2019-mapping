@@ -2,7 +2,9 @@
 
 These files and folders are meant to accompany the hands-on [Mapping with R hands-on session](https://www.ire.org/events-and-training/event/3433/4207/) at 2019 NICAR.
 
+* [Mapping code](https://andrewbtran.github.io/NICAR-2019-mapping/01_maps_code.html)
 * [Mapping slides](https://andrewbtran.github.io/NICAR/2019/mapping/01_maps_slides.html)
+* [Case study code](https://andrewbtran.github.io/NICAR-2019-mapping/02_case_study_code.html)
 * [Case study slides](https://andrewbtran.github.io/NICAR/2019/mapping/02_case_study_slides.html)
 
 ### Downloading this Repo via R
