@@ -5,8 +5,9 @@ date: "3/8/2019"
 output: html_document
 ---
 
+**The full repo for this can be found on [Github](https://github.com/andrewbtran/NICAR-2019-mapping).**
 
-We're going to recreate the graphic from The Washington Post [story about Sinclair Broadcasting]((https://www.washingtonpost.com/graphics/2018/lifestyle/sinclair-broadcasting/): 
+We're going to recreate the graphic from The Washington Post [story about Sinclair Broadcasting](https://www.washingtonpost.com/graphics/2018/lifestyle/sinclair-broadcasting/): 
 
 ![](images/sinclair_map.png)
 
@@ -60,8 +61,6 @@ stations <- fromJSON(json_url)
 
 ![](images/messy.png)
 
-## Turning the JSON into a clean data frame
-
 Let's focus on Primary stations and extract the latitude and longitude data
 
 ```{r cleaning, warning=F, message=F}
@@ -83,7 +82,7 @@ glimpse(primary_stations)
 
 ## What can we do with this data?
 
-There are two data points that we can extract from this data set:
+There are two important data points that we can extract from this data set:
 
 * latitude and longitude for each station
 * the DMA, or Designated Market Area, each station is assigned to
@@ -149,7 +148,7 @@ We'll add a new map layer on top of the `states` boundaries map with the functio
 
 ## Map it
 
-```{r map_it, warning=F, message=F, fig.width=10, fig.height=6, quietly=T, echo=F, results='hide'}
+```{r map_it, warning=F, message=F, fig.width=10, fig.height=6, quietly=T}
 ggplot(states) +
   geom_sf() +
   geom_point(data=station_latlon, aes(x=X, y=Y), color="blue") +
@@ -160,6 +159,11 @@ ggplot(states) +
 
 ## Next, figure out the scope
 
+So the DMA, or designated market area, doesn't line up with normal state boundaries. 
+
+We want to illustrate not just the locations of these stations with dots but also the saturation of Sinclair stations per DMA. 
+
+So first, we need to count up how many stations there are per DMA, which is simple to do thanks to how the JSON we scraped was structured.
 
 ```{r dma_count, warning=F, message=F}
 # Fixing a bad data point
@@ -210,27 +214,10 @@ ggplot(geo) +
 
 Join the DMA station count to it so we can visualize it.
 
-```
+```{r dma_map_choropleth, warning=F, message=F, fig.width=10, fig.height=6, quietly=T}
 # Prepping a column name to join on
 geo <- geo %>% 
   mutate(dma_code=as.numeric(as.character(DMA)))
-
-geo <- left_join(geo, dma_totals, by="dma_code") %>% 
-  filter(!is.na(n)) 
-
-ggplot() +
-  geom_sf(data=states, color="red", fill=NA) +
-  geom_sf(data=geo, aes(fill=n)) +
-  coord_sf()
-```
-
-## Mapping Sinclair DMAs
-
-```{r dma_map_choropleth, warning=F, message=F, fig.width=10, fig.height=6, quietly=T, echo=F, results='hide'}
-# Prepping a column name to join on
-geo <- geo %>% 
-  mutate(dma_code=as.numeric(as.character(DMA)))
-
 
 geo <- left_join(geo, dma_totals, by="dma_code") %>% 
   filter(!is.na(n)) 
@@ -244,6 +231,10 @@ ggplot() +
 
 ## Data prep
 
+We can't label all the dots on the map because there are so many.
+
+So let's create a list of cities that represent a decent distribution.
+
 ```{r sf_map, warning=F, message=F, width=10, height=6}
 # Filtering out locations based on map
 cities <- c("Portland", "Seattle", "Butte", "Boise", "Reno", "Fresno", "Bakersfield", 
@@ -255,6 +246,7 @@ cities <- c("Portland", "Seattle", "Butte", "Boise", "Reno", "Fresno", "Bakersfi
             "Norfolk", "Conway", "Savannah", "Gainesville", "West Palm Beach", "Albany",
             "Providence", "Portland")
 
+# Cleaning up some of the DMA names
 station_latlon_filtered <- station_latlon %>% 
   mutate(DMA_Short= gsub("_.*", "", DMA_Short)) %>% 
   mutate(DMA_Short= gsub("Bozeman", "Butte", DMA_Short)) %>% 
@@ -274,11 +266,13 @@ glimpse(station_latlon_filtered)
 
 ## Style prep
 
+We'll use a couple of useful packages to make styling easier.
+
 * [**ggrepel**](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
 * [**shadowtext**](https://github.com/GuangchuangYu/shadowtext/)
 
 ```{r sf_map2, warning=F, message=F, width=10, height=6}
-# Need to create bins for the numbers
+# Need to create bins for the numbers of DMAs
 
 geo <- geo %>% 
   mutate(bin=case_when(
@@ -309,7 +303,7 @@ And we're adding a bunch of functions in there for styling, like `scale_fill_bre
 
 ## Final map
 
-```{r sf_map3, warning=F, message=F, fig.width=10, fig.height=8, quietly=T, echo=F, results='hide'}
+```{r sf_map3, warning=F, message=F, fig.width=10, fig.height=8, quietly=T}
 
 ggplot() +
   geom_sf(data=states, color="gray", fill=NA, size=.3) +

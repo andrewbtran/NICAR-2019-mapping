@@ -5,6 +5,8 @@ date: "3/8/2019"
 output: html_document
 ---
 
+**The full repo for this can be found on [Github](https://github.com/andrewbtran/NICAR-2019-mapping).**
+
 ## Maps are fun
 
 ![](images/composite_map.png)
@@ -594,7 +596,7 @@ If you pass `shift_geo=T` to the `get_acs()` function in **tidycensus** then the
 
 ## Welcome back Alaska and Hawaii
 
-```{r alaska_hawii, warning=F, message=F, quietly=T, echo=F, results='hide'}
+```{r alaska_hawii, warning=F, message=F, quietly=T}
 county_pov <- get_acs(geography = "county",
                       variables = "B17001_002",
                       summary_var = "B17001_001",
